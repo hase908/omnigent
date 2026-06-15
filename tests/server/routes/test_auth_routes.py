@@ -8,15 +8,12 @@ from __future__ import annotations
 
 import time
 
-import pytest
-
 from omnigent.server.routes.auth import (
-    _CliTicket,
     _claim_is_verified_true,
+    _CliTicket,
     _evict_expired_tickets,
     _sanitize_return_to,
 )
-
 
 # ── _sanitize_return_to ──────────────────────────────────────────────
 

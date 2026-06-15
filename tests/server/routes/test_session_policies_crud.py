@@ -80,9 +80,7 @@ def _policy_payload(**overrides: object) -> dict:
 # ── POST /sessions/{session_id}/policies ──────────────────────────────
 
 
-async def test_create_session_policy(
-    client: httpx.AsyncClient, session_id: str
-) -> None:
+async def test_create_session_policy(client: httpx.AsyncClient, session_id: str) -> None:
     """Creating a session URL policy returns the policy object."""
     resp = await client.post(
         f"/v1/sessions/{session_id}/policies",
@@ -101,9 +99,7 @@ async def test_create_session_policy_duplicate_name(
     client: httpx.AsyncClient, session_id: str
 ) -> None:
     """Duplicate policy name within a session returns 409."""
-    await client.post(
-        f"/v1/sessions/{session_id}/policies", json=_policy_payload(name="dup")
-    )
+    await client.post(f"/v1/sessions/{session_id}/policies", json=_policy_payload(name="dup"))
     resp = await client.post(
         f"/v1/sessions/{session_id}/policies", json=_policy_payload(name="dup")
     )
@@ -139,9 +135,7 @@ async def test_create_session_policy_unregistered_python(
 # ── GET /sessions/{session_id}/policies ───────────────────────────────
 
 
-async def test_list_session_policies(
-    client: httpx.AsyncClient, session_id: str
-) -> None:
+async def test_list_session_policies(client: httpx.AsyncClient, session_id: str) -> None:
     """Listing session policies returns an object list."""
     resp = await client.get(f"/v1/sessions/{session_id}/policies")
     assert resp.status_code == 200
@@ -178,9 +172,7 @@ async def test_list_session_policies_nonexistent_session(
 # ── GET /sessions/{session_id}/policies/{policy_id} ───────────────────
 
 
-async def test_get_session_policy(
-    client: httpx.AsyncClient, session_id: str
-) -> None:
+async def test_get_session_policy(client: httpx.AsyncClient, session_id: str) -> None:
     """Get a specific session policy by ID."""
     create_resp = await client.post(
         f"/v1/sessions/{session_id}/policies",
@@ -193,9 +185,7 @@ async def test_get_session_policy(
     assert resp.json()["id"] == pid
 
 
-async def test_get_session_policy_not_found(
-    client: httpx.AsyncClient, session_id: str
-) -> None:
+async def test_get_session_policy_not_found(client: httpx.AsyncClient, session_id: str) -> None:
     """Getting a nonexistent policy returns 404."""
     resp = await client.get(f"/v1/sessions/{session_id}/policies/pol_nonexistent")
     assert resp.status_code == 404
@@ -204,9 +194,7 @@ async def test_get_session_policy_not_found(
 # ── PATCH /sessions/{session_id}/policies/{policy_id} ─────────────────
 
 
-async def test_update_session_policy(
-    client: httpx.AsyncClient, session_id: str
-) -> None:
+async def test_update_session_policy(client: httpx.AsyncClient, session_id: str) -> None:
     """Patching a policy's name returns the updated policy."""
     create_resp = await client.post(
         f"/v1/sessions/{session_id}/policies",
@@ -222,9 +210,7 @@ async def test_update_session_policy(
     assert resp.json()["name"] == "renamed"
 
 
-async def test_update_session_policy_not_found(
-    client: httpx.AsyncClient, session_id: str
-) -> None:
+async def test_update_session_policy_not_found(client: httpx.AsyncClient, session_id: str) -> None:
     """Patching a nonexistent policy returns 404."""
     resp = await client.patch(
         f"/v1/sessions/{session_id}/policies/pol_nonexistent",
@@ -254,9 +240,7 @@ async def test_update_session_policy_toggle_enabled(
 # ── DELETE /sessions/{session_id}/policies/{policy_id} ────────────────
 
 
-async def test_delete_session_policy(
-    client: httpx.AsyncClient, session_id: str
-) -> None:
+async def test_delete_session_policy(client: httpx.AsyncClient, session_id: str) -> None:
     """Deleting a session policy returns deleted: true."""
     create_resp = await client.post(
         f"/v1/sessions/{session_id}/policies",

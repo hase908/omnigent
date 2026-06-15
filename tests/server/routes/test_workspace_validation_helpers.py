@@ -6,10 +6,7 @@ connection, so we test only the synchronous helpers here.
 
 from __future__ import annotations
 
-import pytest
-
 from omnigent.server.routes._workspace_validation import (
-    WorkspaceValidationError,
     _is_relative_cwd,
     _is_subpath_of,
 )

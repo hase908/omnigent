@@ -60,9 +60,7 @@ async def test_add_comment_negative_start_index(
     assert resp.status_code == 422
 
 
-async def test_add_comment_end_before_start(
-    client: httpx.AsyncClient, session_id: str
-) -> None:
+async def test_add_comment_end_before_start(client: httpx.AsyncClient, session_id: str) -> None:
     """end_index < start_index is rejected with 422."""
     resp = await client.post(
         f"/v1/sessions/{session_id}/comments",
@@ -83,9 +81,7 @@ async def test_list_comments_empty(client: httpx.AsyncClient, session_id: str) -
 
 async def test_list_comments_after_add(client: httpx.AsyncClient, session_id: str) -> None:
     """Comments appear in the list after adding."""
-    add_resp = await client.post(
-        f"/v1/sessions/{session_id}/comments", json=_comment_payload()
-    )
+    add_resp = await client.post(f"/v1/sessions/{session_id}/comments", json=_comment_payload())
     comment_id = add_resp.json()["id"]
 
     resp = await client.get(f"/v1/sessions/{session_id}/comments")
@@ -94,16 +90,10 @@ async def test_list_comments_after_add(client: httpx.AsyncClient, session_id: st
     assert comment_id in ids
 
 
-async def test_list_comments_filter_by_path(
-    client: httpx.AsyncClient, session_id: str
-) -> None:
+async def test_list_comments_filter_by_path(client: httpx.AsyncClient, session_id: str) -> None:
     """Path filter returns only matching comments."""
-    await client.post(
-        f"/v1/sessions/{session_id}/comments", json=_comment_payload(path="a.py")
-    )
-    await client.post(
-        f"/v1/sessions/{session_id}/comments", json=_comment_payload(path="b.py")
-    )
+    await client.post(f"/v1/sessions/{session_id}/comments", json=_comment_payload(path="a.py"))
+    await client.post(f"/v1/sessions/{session_id}/comments", json=_comment_payload(path="b.py"))
 
     resp = await client.get(f"/v1/sessions/{session_id}/comments?path=a.py")
     assert resp.status_code == 200
@@ -116,9 +106,7 @@ async def test_list_comments_filter_by_path(
 
 async def test_update_comment_status(client: httpx.AsyncClient, session_id: str) -> None:
     """Updating a comment's status returns the updated comment."""
-    add_resp = await client.post(
-        f"/v1/sessions/{session_id}/comments", json=_comment_payload()
-    )
+    add_resp = await client.post(f"/v1/sessions/{session_id}/comments", json=_comment_payload())
     cid = add_resp.json()["id"]
 
     resp = await client.patch(
@@ -129,9 +117,7 @@ async def test_update_comment_status(client: httpx.AsyncClient, session_id: str)
     assert resp.json()["status"] == "addressed"
 
 
-async def test_update_comment_not_found(
-    client: httpx.AsyncClient, session_id: str
-) -> None:
+async def test_update_comment_not_found(client: httpx.AsyncClient, session_id: str) -> None:
     """Updating a nonexistent comment returns 404."""
     resp = await client.patch(
         f"/v1/sessions/{session_id}/comments/nonexistent_id",
@@ -145,9 +131,7 @@ async def test_update_comment_not_found(
 
 async def test_delete_comment(client: httpx.AsyncClient, session_id: str) -> None:
     """Deleting a comment returns deleted: true."""
-    add_resp = await client.post(
-        f"/v1/sessions/{session_id}/comments", json=_comment_payload()
-    )
+    add_resp = await client.post(f"/v1/sessions/{session_id}/comments", json=_comment_payload())
     cid = add_resp.json()["id"]
 
     resp = await client.delete(f"/v1/sessions/{session_id}/comments/{cid}")
@@ -160,9 +144,7 @@ async def test_delete_comment(client: httpx.AsyncClient, session_id: str) -> Non
     assert cid not in ids
 
 
-async def test_delete_comment_not_found(
-    client: httpx.AsyncClient, session_id: str
-) -> None:
+async def test_delete_comment_not_found(client: httpx.AsyncClient, session_id: str) -> None:
     """Deleting a nonexistent comment returns 404."""
     resp = await client.delete(f"/v1/sessions/{session_id}/comments/nonexistent_id")
     assert resp.status_code == 404
@@ -173,9 +155,7 @@ async def test_delete_comment_not_found(
 
 async def test_send_comments(client: httpx.AsyncClient, session_id: str) -> None:
     """Sending comments returns formatted message and sent IDs."""
-    add_resp = await client.post(
-        f"/v1/sessions/{session_id}/comments", json=_comment_payload()
-    )
+    add_resp = await client.post(f"/v1/sessions/{session_id}/comments", json=_comment_payload())
     cid = add_resp.json()["id"]
 
     resp = await client.post(
@@ -189,9 +169,7 @@ async def test_send_comments(client: httpx.AsyncClient, session_id: str) -> None
     assert "review comments" in body["formatted_message"].lower()
 
 
-async def test_send_comments_not_found(
-    client: httpx.AsyncClient, session_id: str
-) -> None:
+async def test_send_comments_not_found(client: httpx.AsyncClient, session_id: str) -> None:
     """Sending with a nonexistent comment ID returns 404."""
     resp = await client.post(
         f"/v1/sessions/{session_id}/comments/send",

@@ -7,7 +7,6 @@ Tests ``resolve_host_owner`` and ``resolve_host_launch`` directly
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
 
 import pytest
 from fastapi import HTTPException

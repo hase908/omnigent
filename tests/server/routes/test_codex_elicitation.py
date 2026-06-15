@@ -15,8 +15,6 @@ from omnigent.server.routes._codex_elicitation import (
     _string_list_answer,
     parse_codex_elicitation_request,
 )
-from omnigent.server.schemas import ElicitationResult
-
 
 # ── parse_codex_elicitation_request ──────────────────────────────────
 
@@ -46,9 +44,7 @@ class TestParseCodexElicitationRequest:
 
     def test_unsupported_method_raises(self) -> None:
         with pytest.raises(OmnigentError, match="Unsupported"):
-            parse_codex_elicitation_request(
-                {"id": 1, "method": "unknown/method", "params": {}}
-            )
+            parse_codex_elicitation_request({"id": 1, "method": "unknown/method", "params": {}})
 
     def test_valid_mcp_form_request(self) -> None:
         req = parse_codex_elicitation_request(
