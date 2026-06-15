@@ -37,8 +37,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 USER 0
 
-RUN microdnf install -y --nodocs gcc gcc-c++ make python3-devel \
- && microdnf clean all
+RUN dnf install -y --nodocs gcc gcc-c++ make python3-devel \
+ && dnf clean all
 
 RUN pip install --index-url ${PYPI_INDEX_URL} --no-cache-dir uv
 
@@ -82,8 +82,8 @@ ENV PYTHONUNBUFFERED=1 \
 
 USER 0
 
-RUN microdnf install -y --nodocs git tmux curl ca-certificates \
- && microdnf clean all
+RUN dnf install -y --nodocs git tmux curl ca-certificates \
+ && dnf clean all
 
 RUN git config --system credential.helper \
       '!f() { [ "$1" = get ] || return 0; [ -n "$GIT_TOKEN" ] || return 0; printf "username=%s\npassword=%s\n" "${GIT_USERNAME:-x-access-token}" "$GIT_TOKEN"; }; f'
@@ -117,8 +117,8 @@ ENV PYTHONUNBUFFERED=1 \
 
 USER 0
 
-RUN microdnf install -y --nodocs curl ca-certificates \
- && microdnf clean all
+RUN dnf install -y --nodocs curl ca-certificates \
+ && dnf clean all
 
 COPY --from=server-builder /opt/venv /opt/venv
 COPY --from=server-builder /build /build
