@@ -350,27 +350,17 @@ jobs:
           retention-days: 3
           if-no-files-found: ignore
 
-      - name: Dump ~/.claude state on failure
-        # The native-claude transcript + config live under ~/.claude (a hidden
-        # dir the absolute-path artifact glob misses). Copy them under /tmp so
-        # the server-logs upload captures the Claude transcript (API errors) and
-        # ~/.claude.json (first-run gate state) when the native test fails.
+      - name: Dump Claude transcript on failure
+        # Claude Code's transcript (the JSONL with its actual API errors)
+        # lives under ~/.claude/projects, a hidden dir the absolute-path
+        # artifact glob misses. Copy it under /tmp so the server-logs upload
+        # captures it when the native test fails. Deliberately NOT copying
+        # ~/.claude.json: its apiKeyHelper embeds the gateway token, so it is
+        # never staged for upload — no credential leaves the runner.
         if: failure()
         run: |
           mkdir -p /tmp/claude-home-dump
           cp -r "$HOME/.claude/projects" /tmp/claude-home-dump/ 2>/dev/null || true
-          cp "$HOME/.claude.json" /tmp/claude-home-dump/claude.json 2>/dev/null || true
-          # Redact the bearer token from the copied config before upload.
-          if [ -f /tmp/claude-home-dump/claude.json ]; then
-            python3 - <<'PY' || true
-          import json, pathlib, re
-          p = pathlib.Path("/tmp/claude-home-dump/claude.json")
-          txt = p.read_text()
-          # Scrub any apiKeyHelper printf token and obvious bearer-looking values.
-          txt = re.sub(r'(printf %s )\S+', r'\1<REDACTED>', txt)
-          p.write_text(txt)
-          PY
-          fi
 
       - name: Upload server logs on failure
         id: upload_server_logs
@@ -388,8 +378,8 @@ jobs:
           # Also grab runner.log (carries the claude-native auto-launch +
           # auth-resolution + terminal-launch logs) and the native bridge dir
           # (tmux target, transcript-forward deltas) under
-          # /tmp/omnigent-<uid>/claude-native, plus the ~/.claude dump above —
-          # all needed to triage a native render-parity failure.
+          # /tmp/omnigent-<uid>/claude-native, plus the Claude transcript
+          # staged above — all needed to triage a native render-parity failure.
           path: |
             /tmp/pytest-of-runner/**/e2e_ui_server*/server.log
             /tmp/pytest-of-runner/**/e2e_ui_server*/runner.log
