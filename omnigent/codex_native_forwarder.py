@@ -4536,10 +4536,9 @@ def _session_usage_data_from_params(params: dict[str, Any]) -> dict[str, int] | 
     # to ``total.inputTokens`` only when ``last`` is unavailable (first
     # frame before a turn completes).
     last = token_usage.get("last")
-    if isinstance(last, dict):
-        last_input = last.get("inputTokens")
-        if isinstance(last_input, int) and last_input >= 0:
-            data["context_tokens"] = last_input
+    last_input = last.get("inputTokens") if isinstance(last, dict) else None
+    if isinstance(last_input, int) and last_input >= 0:
+        data["context_tokens"] = last_input
     elif isinstance(cumulative_input_tokens, int) and cumulative_input_tokens >= 0:
         data["context_tokens"] = cumulative_input_tokens
     if isinstance(output_tokens, int) and output_tokens >= 0:

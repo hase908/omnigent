@@ -7355,6 +7355,31 @@ def test_session_usage_data_context_tokens_falls_back_without_last() -> None:
     assert data["cumulative_input_tokens"] == 1000
 
 
+def test_session_usage_data_context_tokens_falls_back_when_last_missing_input() -> None:
+    """
+    When ``tokenUsage.last`` is present but lacks a usable ``inputTokens``,
+    ``context_tokens`` falls back to ``total.inputTokens`` rather than being
+    omitted (which would leave the UI ring stuck on a stale value from a
+    previous coalescer frame).
+    """
+    params = {
+        "tokenUsage": {
+            "total": {
+                "inputTokens": 3000,
+                "outputTokens": 500,
+                "contextWindow": 200_000,
+            },
+            "last": {
+                "outputTokens": 100,
+                # inputTokens intentionally absent
+            },
+        },
+    }
+    data = codex_native_forwarder._session_usage_data_from_params(params)
+    assert data is not None
+    assert data["context_tokens"] == 3000
+
+
 def test_usage_coalescer_flush_attaches_model_to_every_post() -> None:
     """
     ``flush`` attaches the recorded model to each token-bearing post.
