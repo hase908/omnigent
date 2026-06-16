@@ -76,6 +76,10 @@ dependencies = [
     # to remember `--extra all`. Issue #406.
     "claude-agent-sdk>=0.1.62",
     "openai-agents>=0.0.17",
+    # The Cursor harness drives the cursor-sdk (custom_tools tool bridge over a
+    # local bridge); like the other first-party harnesses it is part of the
+    # baseline install so `--harness cursor` works without `--extra`.
+    "cursor-sdk>=0.1.7",
     "PyJWT[crypto]>=2.8,<3",
     "argon2-cffi>=23.1,<24",
 ]
@@ -101,6 +105,10 @@ modal = ["modal>=1.0,<2"]
 # server-managed `sandbox.provider: daytona`).
 # Same lazy-import posture as the modal extra. Pre-1.0 SDK: pin minor.
 daytona = ["daytona>=0.180,<1"]
+# CoreWeave Sandbox launcher (`omnigent sandbox --provider cwsandbox` and
+# server-managed `sandbox.provider: cwsandbox`).
+# Same lazy-import posture as above. Pre-1.0 SDK: pin minor.
+cwsandbox = ["cwsandbox>=0.26,<1"]
 # MLflow tracing is opt-in: tracing is disabled by default and the
 # server degrades gracefully when mlflow is absent, so the (heavy) mlflow
 # dependency only installs for users who want it (`omnigent[tracing]`).
@@ -139,7 +147,9 @@ dev = [
     "pytest-cov>=5",
     "pytest-playwright>=0.5",
     # Hash-partition the test suite across N shards for the nightly
-    # matrix. Pinned to a known-stable older release.
+    # matrix. Pinned to a known-stable older release. Used by e2e.yml;
+    # the e2e-ui suite uses its own round-robin `--splits`/`--group`
+    # split (see tests/e2e_ui/conftest.py), so no extra dep there.
     "pytest-shard==0.1.2",
     # Per-test wallclock cap. Without this, a single hung test (e.g.
     # a pexpect REPL test waiting for a terminal pattern that never
@@ -200,6 +210,7 @@ include = ["omnigent*"]
 "omnigent.db" = ["alembic.ini"]
 "omnigent.db.migrations" = ["script.py.mako"]
 "omnigent.resources.examples" = ["*.yaml", "*.sh", "debby/**/*", "polly/**/*"]
+"omnigent.resources.pi_native" = ["*.js"]
 # include UI assets in build
 "omnigent.server" = ["static/web-ui/**/*"]
 
@@ -446,6 +457,12 @@ ignore_missing_imports = true
 # posture as modal above.
 [[tool.mypy.overrides]]
 module = "daytona.*"
+ignore_missing_imports = true
+
+# cwsandbox is an optional dep (the `cwsandbox` extra); same lazy-import
+# posture as modal above.
+[[tool.mypy.overrides]]
+module = "cwsandbox.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
